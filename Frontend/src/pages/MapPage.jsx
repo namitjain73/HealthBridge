@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Navigation, Save, Trash2, Search, Hospital } from 'lucide-react';
 import axios from 'axios';
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete, InfoWindow } from '@react-google-maps/api';
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyD7Vw4BlccSY7Y677v599yhYC7heGWi65s";
 const LIBRARIES = ["places"];  // Define libraries as a constant outside component
@@ -19,6 +19,7 @@ const MapPage = () => {
     const [showHospitals, setShowHospitals] = useState(true);
     const [loading, setLoading] = useState(false);
     const [mapRef, setMapRef] = useState(null);
+    const [selectedHospital, setSelectedHospital] = useState(null);
     const autocompleteRef = useRef(null);
 
     const STORAGE_KEY = "my_saved_locations_v1";
@@ -158,6 +159,16 @@ const MapPage = () => {
         findRouteUsingCoords(coords);
     };
 
+    // Handle hospital marker click
+    const handleHospitalClick = async (hospital) => {
+        setSelectedHospital(hospital);
+        const destCoords = {
+            lat: hospital.location.coordinates[1],
+            lng: hospital.location.coordinates[0]
+        };
+        await findRouteUsingCoords(destCoords);
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative">
             {/* Google Map Container */}
@@ -191,6 +202,7 @@ const MapPage = () => {
                                 lng: hospital.location.coordinates[0],
                             }}
                             title={hospital.name}
+                            onClick={() => handleHospitalClick(hospital)}
                             icon={{
                                 url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
                                     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="14" fill="%23ef4444" stroke="%23ffffff" stroke-width="2"/><text x="16" y="20" font-size="16" text-anchor="middle" fill="white" dominant-baseline="middle">🏥</text></svg>'
@@ -217,6 +229,39 @@ const MapPage = () => {
                             }}
                         />
                     ))}
+
+                    {/* Hospital Info Window */}
+                    {selectedHospital && (
+                        <InfoWindow
+                            position={{
+                                lat: selectedHospital.location.coordinates[1],
+                                lng: selectedHospital.location.coordinates[0],
+                            }}
+                            onCloseClick={() => setSelectedHospital(null)}
+                        >
+                            <div className="bg-white p-4 rounded-lg shadow-lg max-w-xs">
+                                <h3 className="text-lg font-bold text-gray-800 mb-2">{selectedHospital.name}</h3>
+                                {selectedHospital.address && (
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <span className="font-semibold">Address:</span> {selectedHospital.address}
+                                    </p>
+                                )}
+                                {selectedHospital.phone && (
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <span className="font-semibold">Phone:</span> {selectedHospital.phone}
+                                    </p>
+                                )}
+                                {selectedHospital.specialties && selectedHospital.specialties.length > 0 && (
+                                    <p className="text-sm text-gray-600 mb-2">
+                                        <span className="font-semibold">Specialties:</span> {selectedHospital.specialties.join(', ')}
+                                    </p>
+                                )}
+                                <p className="text-sm text-blue-600 font-semibold">
+                                    Check route info in the sidebar →
+                                </p>
+                            </div>
+                        </InfoWindow>
+                    )}
 
                     {/* Directions */}
                     {directions && <DirectionsRenderer directions={directions} />}
@@ -304,27 +349,65 @@ const MapPage = () => {
 
                 <hr className="border-gray-700 my-4" />
 
-                {/* Save Current Location */}
-                <div className="mb-4">
-                    <label className="block text-xs text-gray-400 mb-2">Save current location</label>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Name for this location"
-                            value={saveName}
-                            onChange={(e) => setSaveName(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSaveLocation()}
-                            className="flex-1 px-3 py-2 rounded-lg border-none bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                {/* Selected Hospital Details */}
+                {selectedHospital ? (
+                    <div className="mb-4">
+                        <h3 className="text-lg font-bold text-white mb-3">{selectedHospital.name}</h3>
+                        <div className="space-y-2 text-sm">
+                            {selectedHospital.address && (
+                                <div className="text-gray-300">
+                                    <span className="text-gray-400">Address:</span> {selectedHospital.address}
+                                </div>
+                            )}
+                            {selectedHospital.phone && (
+                                <div className="text-gray-300">
+                                    <span className="text-gray-400">Phone:</span> {selectedHospital.phone}
+                                </div>
+                            )}
+                            {selectedHospital.beds && (
+                                <div className="text-gray-300">
+                                    <span className="text-gray-400">Beds:</span> {selectedHospital.beds}
+                                </div>
+                            )}
+                            {selectedHospital.specialties && selectedHospital.specialties.length > 0 && (
+                                <div className="text-gray-300">
+                                    <span className="text-gray-400">Specialties:</span> {selectedHospital.specialties.join(', ')}
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Pricing Section */}
+                        {selectedHospital.pricing && selectedHospital.pricing.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-700">
+                                <h4 className="font-semibold text-white mb-2 text-sm">Services & Pricing</h4>
+                                <div className="max-h-40 overflow-y-auto space-y-2">
+                                    {selectedHospital.pricing.map((item, idx) => (
+                                        <div key={idx} className="bg-white/5 p-2 rounded text-xs text-gray-300">
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-white">{item.serviceType}</span>
+                                                <span className="text-green-400">₹{item.price}</span>
+                                            </div>
+                                            {item.description && (
+                                                <div className="text-gray-400 text-xs mt-1">{item.description}</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
                         <button
-                            onClick={handleSaveLocation}
-                            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                            onClick={() => setSelectedHospital(null)}
+                            className="mt-4 w-full px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors"
                         >
-                            <Save className="h-4 w-4" />
-                            Save
+                            Clear Selection
                         </button>
                     </div>
-                </div>
+                ) : (
+                    <div className="text-gray-400 text-sm text-center py-4">
+                        Click a hospital marker to view details and pricing
+                    </div>
+                )}
 
                 {/* Saved Locations */}
                 <div className="mb-2">
