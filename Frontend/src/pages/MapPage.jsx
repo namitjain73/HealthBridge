@@ -379,16 +379,23 @@ const MapPage = () => {
                         {/* Pricing Section */}
                         {selectedHospital.pricing && selectedHospital.pricing.length > 0 && (
                             <div className="mt-4 pt-4 border-t border-gray-700">
-                                <h4 className="font-semibold text-white mb-2 text-sm">Services & Pricing</h4>
-                                <div className="max-h-40 overflow-y-auto space-y-2">
+                                <h4 className="font-semibold text-white mb-3 text-sm flex items-center gap-2">
+                                    💊 Services & Pricing
+                                </h4>
+                                <div className="max-h-56 overflow-y-auto space-y-2">
                                     {selectedHospital.pricing.map((item, idx) => (
-                                        <div key={idx} className="bg-white/5 p-2 rounded text-xs text-gray-300">
-                                            <div className="flex justify-between">
-                                                <span className="font-medium text-white">{item.serviceType}</span>
-                                                <span className="text-green-400">₹{item.price}</span>
+                                        <div key={idx} className="bg-gradient-to-r from-blue-900/40 to-indigo-900/40 p-3 rounded-lg border border-blue-700/30 text-xs">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div className="flex-1">
+                                                    <div className="font-semibold text-white text-sm">{item.name}</div>
+                                                    <div className="text-gray-400 text-xs mt-0.5">{item.serviceType}</div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-green-400 font-bold text-sm">₹{item.price}</div>
+                                                </div>
                                             </div>
                                             {item.description && (
-                                                <div className="text-gray-400 text-xs mt-1">{item.description}</div>
+                                                <div className="text-gray-400 text-xs mt-2 border-t border-gray-600/30 pt-2">{item.description}</div>
                                             )}
                                         </div>
                                     ))}
