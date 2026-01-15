@@ -1,11 +1,12 @@
 import axios from 'axios';
 
-// Detect if running on localhost or network
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const apiBaseURL = isLocalhost ? 'http://localhost:5000/api' : `http://${window.location.hostname}:5000/api`;
+// Use VITE_API_URL environment variable, fallback to localhost for development
+const apiBaseURL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : 'http://localhost:5000/api';
 
 const api = axios.create({
-  baseURL: apiBaseURL, // Dynamically set based on access method
+  baseURL: apiBaseURL,
   headers: {
     'Content-Type': 'application/json',
   },
