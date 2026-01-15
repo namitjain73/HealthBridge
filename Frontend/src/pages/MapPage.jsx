@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Navigation, Save, Trash2, Search, Hospital } from 'lucide-react';
+import { ArrowLeft, MapPin, Navigation, Save, Trash2, Search, Building2 } from 'lucide-react';
 import axios from 'axios';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer, Autocomplete, InfoWindow } from '@react-google-maps/api';
 
@@ -339,7 +339,7 @@ const MapPage = () => {
                                 : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                         }`}
                     >
-                        <Hospital className="h-4 w-4" />
+                        <Building2 className="h-4 w-4" />
                         {showHospitals ? 'Hide' : 'Show'} Registered Hospitals ({hospitals.length})
                     </button>
                     {hospitals.length === 0 && (
