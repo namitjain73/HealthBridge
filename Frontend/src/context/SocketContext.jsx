@@ -2,9 +2,20 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import io from 'socket.io-client';
 import { useLocation } from 'react-router-dom'; 
 
-// Detect if running on localhost or network
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const SOCKET_SERVER_URL = isLocalhost ? "http://localhost:5000" : `http://${window.location.hostname}:5000`;
+// Use VITE_API_URL environment variable for Socket.IO connection
+const getSocketURL = () => {
+  const apiURL = import.meta.env.VITE_API_URL;
+  if (apiURL) {
+    // Remove /api suffix if present and return the base URL
+    return apiURL.replace('/api', '');
+  }
+  // Fallback for development
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? "http://localhost:5000"
+    : `https://${window.location.hostname}`;
+};
+
+const SOCKET_SERVER_URL = getSocketURL();
 
 const SocketContext = createContext();
 
