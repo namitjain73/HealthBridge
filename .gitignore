@@ -1,1 +1,49 @@
-"Backend/.env" 
+"# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build directories
+dist/
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Backend specific
+Backend/.env
+Backend/uploads/
+Backend/node_modules/
+
+# Frontend specific
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.env.local
+
+# Database
+*.mongodb
+
+# Misc
+.cache/
+temp/
+tmp/" 
