@@ -1,4 +1,5 @@
 # HealthBridge: Smart AI-Powered Diagnosis & Healthcare Platform  
+Live Link - https://healthbridgeai.vercel.app/
 
 ## 🚀 Overview  
 HealthBridge is a one-stop AI-powered healthcare platform that bridges the gap between patients, doctors, and pharmacies. It uses machine learning models to predict diseases from symptoms, enables real-time doctor consultations, supports pharmacy integration, and provides navigation to nearby hospitals and medical stores.  
